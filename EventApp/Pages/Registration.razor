@@ -1,0 +1,88 @@
+@page "/registration"
+@using System.ComponentModel.DataAnnotations
+
+<h3>Event Registration & Attendance Tracker</h3>
+
+<div class="row mt-4">
+    <div class="col-md-5">
+        <h4>Register New Attendee</h4>
+        <EditForm Model="@newAttendee" OnValidSubmit="@AddToAttendance">
+            <DataAnnotationsValidator />
+
+            <div class="mb-3">
+                <label>Full Name</label>
+                <InputText class="form-control" @bind-Value="newAttendee.Name" />
+                <ValidationMessage For="@(() => newAttendee.Name)" />
+            </div>
+
+            <div class="mb-3">
+                <label>Email Address</label>
+                <InputText class="form-control" @bind-Value="newAttendee.Email" />
+                <ValidationMessage For="@(() => newAttendee.Email)" />
+            </div>
+
+            <button type="submit" class="btn btn-success">Check In</button>
+        </EditForm>
+    </div>
+
+    <div class="col-md-7">
+        <h4>Live Attendance List</h4>
+        
+        @if (attendanceList.Count == 0)
+        {
+            <p class="text-muted">No attendees checked in yet.</p>
+        }
+        else
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var person in attendanceList)
+                    {
+                        <tr>
+                            <td>@person.Name</td>
+                            <td>@person.Email</td>
+                            <td>@person.CheckInTime.ToShortTimeString()</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@code {
+    // State Management: List ini menyimpan data di memori selama sesi berjalan
+    private List<Attendee> attendanceList = new List<Attendee>();
+    private Attendee newAttendee = new Attendee();
+
+    private void AddToAttendance()
+    {
+        // Set waktu check-in otomatis
+        newAttendee.CheckInTime = DateTime.Now;
+        
+        // Tambahkan ke list (State Update)
+        attendanceList.Add(newAttendee);
+        
+        // Reset form untuk peserta berikutnya
+        newAttendee = new Attendee();
+    }
+
+    public class Attendee
+    {
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        public DateTime CheckInTime { get; set; }
+    }
+}

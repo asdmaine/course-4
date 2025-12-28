@@ -1,0 +1,69 @@
+@page "/event-card"
+@using System.ComponentModel.DataAnnotations
+
+<h3>Event Card Manager</h3>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card bg-light mb-3" style="max-width: 18rem;">
+                <div class="card-header">Preview</div>
+                <div class="card-body">
+                    <h5 class="card-title">@eventModel.Title</h5>
+                    <p class="card-text">@eventModel.Description</p>
+                    <p class="text-muted">Date: @eventModel.EventDate.ToShortDateString()</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <EditForm Model="@eventModel" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-group mb-2">
+                    <label>Event Title:</label>
+                    <InputText class="form-control" @bind-Value="eventModel.Title" />
+                    <ValidationMessage For="@(() => eventModel.Title)" />
+                </div>
+
+                <div class="form-group mb-2">
+                    <label>Description:</label>
+                    <InputTextArea class="form-control" @bind-Value="eventModel.Description" />
+                </div>
+
+                <div class="form-group mb-2">
+                    <label>Date:</label>
+                    <InputDate class="form-control" @bind-Value="eventModel.EventDate" />
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save Event</button>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private EventItem eventModel = new EventItem
+    {
+        Title = "Grand Opening Course 4",
+        Description = "Welcome to the new project phase.",
+        EventDate = DateTime.Today
+    };
+
+    private void HandleValidSubmit()
+    {
+        // Logika simpan (mockup)
+        Console.WriteLine("Event saved successfully!");
+    }
+
+    public class EventItem
+    {
+        [Required(ErrorMessage = "Judul acara wajib diisi.")]
+        [StringLength(30, ErrorMessage = "Judul terlalu panjang (maks 30 karakter).")]
+        public string Title { get; set; }
+
+        public string Description { get; set; }
+        public DateTime EventDate { get; set; }
+    }
+}
